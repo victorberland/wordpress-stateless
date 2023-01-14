@@ -2,6 +2,8 @@ FROM wordpress:latest
 RUN apt-get update && apt-get install -y unison sshpass
 RUN apt-get install -y cron sudo
 
+COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
 # save last (exec) line to file
 RUN tail -n 1 /usr/local/bin/docker-entrypoint.sh > /tmp/execline
 RUN sed -i '$ d' /usr/local/bin/docker-entrypoint.sh
