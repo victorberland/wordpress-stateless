@@ -14,7 +14,7 @@ RUN cat /usr/local/bin/extra-entrypoint.sh >> /usr/local/bin/docker-entrypoint.s
 
 # download Redis WP plugin
 RUN curl -L -o /var/www/html/wp-content/plugins/redis-object-cache.zip https://downloads.wordpress.org/plugin/redis-cache.2.2.3.zip
-RUN unzip /var/www/html/wp-content/plugins/redis-object-cache.zip -d /usr/src/wordpress/wp-content/plugins/
+RUN unzip /var/www/html/wp-content/plugins/redis-object-cache.zip -d /var/www/html/wp-content/plugins/
 RUN rm /var/www/html/wp-content/plugins/redis-object-cache.zip
 
 # add back exec line
