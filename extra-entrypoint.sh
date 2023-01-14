@@ -2,7 +2,7 @@ echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
 
 chown www-data:www-data /var/www
 chown -R www-data:www-data /var/www/html
-sudo -u www-data sshpass -p $SSH_PASSWORD unison -batch /var/www/html/wp-content ssh://$SSH_USERNAME@$SSH_HOST:$SSH_PORT/ -auto &!
+sudo -u www-data sshpass -p $SSH_PASSWORD unison -batch /var/www/html/wp-content ssh://$SSH_USERNAME@$SSH_HOST:$SSH_PORT/ -auto -maxerrors 1000 &!
 
 touch /var/spool/cron/crontabs/www-data
 
