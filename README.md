@@ -12,7 +12,7 @@ Either build the image yourself or pull from `rg.fr-par.scw.cloud/4x0-net/wordpr
 
 ## Environment variables
 
-## Serverless specific
+### Serverless specific
 - `SSH_HOST` Your SSH endpoint with Unison installed
 - `SSH_PORT`
 - `SSH_USERNAME`
@@ -20,7 +20,7 @@ Either build the image yourself or pull from `rg.fr-par.scw.cloud/4x0-net/wordpr
 - `SSH_PATH` Path to where Unison will sync. Leave blank to use home directory. Start with `/` for absolute path.
 
 
-## Default Docker WordPress
+### Default Docker WordPress
 - `WORDPRESS_DB_HOST` Host and port
 - `WORDPRESS_DB_NAME`
 - `WORDPRESS_DB_USER`
