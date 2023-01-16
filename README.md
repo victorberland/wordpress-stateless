@@ -17,7 +17,7 @@ Either build the image yourself or pull from `rg.fr-par.scw.cloud/4x0-net/wordpr
 - `SSH_PORT`
 - `SSH_USERNAME`
 - `SSH_PASSWORD` **Set as secret**
-- `SSH_PATH` Path to where Unison will sync. Leave blank to use home directory. Start with `/` for absolute path.
+- `SSH_PATH` Path to where Unison will sync. Leave blank to use home directory. Start with `/` for absolute path. **Currently does not work, and only uses home folder**
 
 
 ### Default Docker WordPress
