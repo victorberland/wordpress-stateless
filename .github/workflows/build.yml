@@ -13,6 +13,6 @@ jobs:
       - name: Login to registry
         run: echo ${{ secrets.SCALEWAY_SECRET_KEY }} | docker login rg.fr-par.scw.cloud/4x0-net -u nologin --password-stdin
       - name: Build and tag the Docker image
-        run: docker build -t rg.fr-par.scw.cloud/4x0-net/wordpress-serverless:latest .
+        run: docker build -t rg.fr-par.scw.cloud/4x0-net/wordpress-serverless:${{ github.sha }} .
       - name: Push the Docker image to the registry
-        run: docker push rg.fr-par.scw.cloud/4x0-net/wordpress-serverless:latest
+        run: docker push rg.fr-par.scw.cloud/4x0-net/wordpress-serverless:${{ github.sha }}
