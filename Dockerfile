@@ -4,6 +4,9 @@ RUN apt-get install -y cron sudo zip
 
 COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
+# copy mu-plugins folder
+# COPY mu-plugins /usr/src/wordpress/wp-content/mu-plugins
+
 # save last (exec) line to file
 RUN tail -n 1 /usr/local/bin/docker-entrypoint.sh > /tmp/execline
 RUN sed -i '$ d' /usr/local/bin/docker-entrypoint.sh
