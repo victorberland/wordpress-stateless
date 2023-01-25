@@ -1,11 +1,9 @@
 FROM wordpress:latest
-RUN apt-get update && apt-get install -y unison sshpass
-RUN apt-get install -y cron sudo zip
+RUN apt-get update && apt-get install -y unison sshpass cron sudo zip
 
 COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
-# copy mu-plugins folder
-# COPY mu-plugins /usr/src/wordpress/wp-content/mu-plugins
+COPY mu-plugins /usr/src/wordpress/wp-content/mu-plugins
 
 # save last (exec) line to file
 RUN tail -n 1 /usr/local/bin/docker-entrypoint.sh > /tmp/execline
