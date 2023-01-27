@@ -24,7 +24,7 @@ Author:       4x0
 // });
 
 add_action('serverless_sync', function() {
-	$cmd = 'sshpass -p $SSH_PASSWORD unison -batch /var/www/html/wp-content ssh://$SSH_USERNAME@$SSH_HOST:$SSH_PORT/ -auto -dontchmod -ignorearchives -perms 0 -maxerrors 1000 >> /var/www/unison.log';
+	$cmd = 'sshpass -p $SSH_PASSWORD unison -batch /var/www/html/wp-content ssh://$SSH_USERNAME@$SSH_HOST:$SSH_PORT/ -auto -dontchmod -ignorearchives -prefer newer -perms 0 -maxerrors 1000 >> /var/www/unison.log';
 	shell_exec($cmd);
 });
 
