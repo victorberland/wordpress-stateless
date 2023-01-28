@@ -23,10 +23,10 @@ Author:       4x0
 // 		}
 // });
 
-add_action('serverless_sync', function() {
-	$cmd = 'sshpass -p $SSH_PASSWORD unison -batch /var/www/html/wp-content ssh://$SSH_USERNAME@$SSH_HOST:$SSH_PORT/ -auto -dontchmod -ignorearchives -prefer newer -perms 0 -maxerrors 1000 >> /var/www/unison.log';
-	shell_exec($cmd);
-});
+// add_action('serverless_sync', function() {
+// 	$cmd = 'sshpass -p $SSH_PASSWORD unison -batch /var/www/html/wp-content ssh://$SSH_USERNAME@$SSH_HOST:$SSH_PORT/ -auto -dontchmod -ignorearchives -prefer newer -perms 0 -maxerrors 1000 >> /var/www/unison.log';
+// 	shell_exec($cmd);
+// });
 
 
 add_action('admin_menu', function() {
@@ -36,7 +36,7 @@ add_action('admin_menu', function() {
 	<h1>Serverless sync</h1>
 	<p>Syncs the uploads folder with the dataportal s3 bucket</p>
 
-	<?php do_action('serverless_sync'); ?>
+	<?php //do_action('serverless_sync'); ?>
 
 	<!-- list the contents of the unison log file in scrollable div -->
 	<code style="overflow: scroll; height: 300px; width: 100%; max-width: 700px; display: block;">
