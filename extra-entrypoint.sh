@@ -8,9 +8,6 @@ echo "define('WPCACHEHOME', '/var/www/html/wp-content/plugins/wp-super-cache/');
 # add last line to wp-config.php
 echo $last_line >> /var/www/html/wp-config.php
 
-cat wp-config.php
-
-
 echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
 
 chown www-data:www-data /var/www
