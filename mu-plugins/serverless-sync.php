@@ -40,9 +40,10 @@ add_action('admin_menu', function() {
 
 	<!-- list the contents of the unison log file in scrollable div -->
 	<code style="overflow: scroll; height: 300px; width: 100%; max-width: 700px; display: block;">
+		Logs disabled for now
 		<?php
-			$unison_log = file_get_contents('/var/www/unison.log');
-			echo nl2br($unison_log);
+			// $unison_log = file_get_contents('/var/www/unison.log');
+			// echo nl2br($unison_log);
 		?>
 	</code>
 </div>
