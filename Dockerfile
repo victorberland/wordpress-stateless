@@ -4,7 +4,6 @@ RUN apt-get update && apt-get install -y unison sshpass cron sudo zip redis-serv
 COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
 COPY mu-plugins /usr/src/wordpress/wp-content/mu-plugins
-COPY object-cache.php /usr/src/wordpress/wp-content/object-cache.php
 
 # save last (exec) line to file
 RUN tail -n 1 /usr/local/bin/docker-entrypoint.sh > /tmp/execline
