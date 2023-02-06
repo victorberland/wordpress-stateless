@@ -27,4 +27,3 @@ line="*/5 * * * * sshpass -p $SSH_PASSWORD unison -batch /var/www/html/wp-conten
 crontab -u www-data -l | { cat; echo "$line"; } | crontab -u www-data -
 crontab -u www-data /var/spool/cron/crontabs/www-data
 service cron restart
-service redis-server restart
