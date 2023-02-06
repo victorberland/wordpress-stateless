@@ -1,4 +1,4 @@
-name: Build and push to Scaleway registry
+name: Build and push to Scaleway registry - Production
 
 on:
     push:
