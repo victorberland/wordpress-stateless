@@ -157,6 +157,11 @@ RUN curl -o /tmp/wp-super-cache.zip -SL https://downloads.wordpress.org/plugin/w
 	&& unzip /tmp/wp-super-cache.zip -d /var/www/html/wp-content/plugins \
 	&& rm /tmp/wp-super-cache.zip
 
+# download plausible-analytics plugin
+RUN curl -o /tmp/plausible-analytics.zip -SL https://downloads.wordpress.org/plugin/plausible-analytics.zip \
+	&& unzip /tmp/plausible-analytics.zip -d /var/www/html/wp-content/plugins \
+	&& rm /tmp/plausible-analytics.zip
+
 COPY --chown=www-data:www-data wp-config-docker.php /var/www/html/wp-config.php
 COPY entrypoint.sh /usr/local/bin/
 
