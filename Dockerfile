@@ -157,6 +157,10 @@ RUN curl -o /tmp/wp-super-cache.zip -SL https://downloads.wordpress.org/plugin/w
 	&& unzip /tmp/wp-super-cache.zip -d /var/www/html/wp-content/plugins \
 	&& rm /tmp/wp-super-cache.zip
 
+# download advanced-cache.php to enable super-cache
+RUN curl -o /tmp/advanced-cache.php -SL https://raw.githubusercontent.com/Automattic/wp-super-cache/trunk/advanced-cache.php \
+	&& mv /tmp/advanced-cache.php /var/www/html/wp-content/advanced-cache.php
+
 # download plausible-analytics plugin
 RUN curl -o /tmp/plausible-analytics.zip -SL https://downloads.wordpress.org/plugin/plausible-analytics.zip \
 	&& unzip /tmp/plausible-analytics.zip -d /var/www/html/wp-content/plugins \
