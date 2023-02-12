@@ -16,9 +16,24 @@ COPY mu-plugins /usr/src/wordpress/wp-content/mu-plugins
 COPY plugins /usr/src/wordpress/wp-content/plugins
 
 # download redis-cache plugin
-RUN curl -o /tmp/redis-cache.zip -SL https://downloads.wordpress.org/plugin/redis-cache.1.3.8.zip \
+RUN curl -o /tmp/redis-cache.zip -SL https://downloads.wordpress.org/plugin/redis-cache.zip \
 		&& unzip /tmp/redis-cache.zip -d /usr/src/wordpress/wp-content/plugins \
 		&& rm /tmp/redis-cache.zip
+
+# download redis cache object cache dropin
+RUN curl -o /tmp/object-cache.php -SL https://raw.githubusercontent.com/rhubarbgroup/redis-cache/master/includes/object-cache.php \
+		&& mv /tmp/object-cache.php /usr/src/wordpress/wp-content/object-cache.php
+
+# download svg-support plugin
+RUN curl -o /tmp/svg-support.zip -SL https://downloads.wordpress.org/plugin/svg-support.zip \
+		&& unzip /tmp/svg-support.zip -d /usr/src/wordpress/wp-content/plugins \
+		&& rm /tmp/svg-support.zip
+
+# download postmark-approved-wordpress-plugin plugin
+RUN curl -o /tmp/postmark-approved-wordpress-plugin.zip -SL https://downloads.wordpress.org/plugin/postmark-approved-wordpress-plugin.zip \
+		&& unzip /tmp/postmark-approved-wordpress-plugin.zip -d /usr/src/wordpress/wp-content/plugins \
+		&& rm /tmp/postmark-approved-wordpress-plugin.zip
+
 
 # save last (exec) line to file
 RUN tail -n 1 /usr/local/bin/docker-entrypoint.sh > /tmp/execline
