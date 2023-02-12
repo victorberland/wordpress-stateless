@@ -129,5 +129,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', __DIR__ . '/' );
 }
 
+
+define('WP_CACHE', true);
+define('WPCACHEHOME', '/var/www/html/wp-content/plugins/wp-super-cache/');
+define('DISABLE_WP_CRON', true);
+
 /** Sets up WordPress vars and included files. */
 require_once ABSPATH . 'wp-settings.php';

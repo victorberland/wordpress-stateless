@@ -132,31 +132,30 @@ RUN rm -rf /var/www/html/wp-content/plugins/hello.php /var/www/html/wp-content/p
 
 COPY mu-plugins /var/www/html/wp-content/mu-plugins
 COPY plugins /var/www/html/wp-content/plugins
-# COPY mu-plugins /usr/src/wordpress/wp-content/mu-plugins
-# COPY plugins /usr/src/wordpress/wp-content/plugins
 
 # download redis-cache plugin
-# RUN curl -o /tmp/redis-cache.zip -SL https://downloads.wordpress.org/plugin/redis-cache.zip \
-# 		&& unzip /tmp/redis-cache.zip -d /var/www/html/wp-content/plugins \
-# 		&& rm /tmp/redis-cache.zip
-# RUN curl -o /tmp/redis-cache.zip -SL https://downloads.wordpress.org/plugin/redis-cache.zip \
-# 		&& unzip /tmp/redis-cache.zip -d /usr/src/wordpress/wp-content/plugins \
-# 		&& rm /tmp/redis-cache.zip
+RUN curl -o /tmp/redis-cache.zip -SL https://downloads.wordpress.org/plugin/redis-cache.zip \
+	&& unzip /tmp/redis-cache.zip -d /var/www/html/wp-content/plugins \
+	&& rm /tmp/redis-cache.zip
 
 # download redis cache object cache dropin
-# RUN curl -o /tmp/object-cache.php -SL https://raw.githubusercontent.com/rhubarbgroup/redis-cache/master/includes/object-cache.php \
-# 		&& mv /tmp/object-cache.php /usr/src/wordpress/wp-content/object-cache.php
-#
-# # download svg-support plugin
-# RUN curl -o /tmp/svg-support.zip -SL https://downloads.wordpress.org/plugin/svg-support.zip \
-# 		&& unzip /tmp/svg-support.zip -d /usr/src/wordpress/wp-content/plugins \
-# 		&& rm /tmp/svg-support.zip
-#
-# # download postmark-approved-wordpress-plugin plugin
-# RUN curl -o /tmp/postmark-approved-wordpress-plugin.zip -SL https://downloads.wordpress.org/plugin/postmark-approved-wordpress-plugin.zip \
-# 		&& unzip /tmp/postmark-approved-wordpress-plugin.zip -d /usr/src/wordpress/wp-content/plugins \
-# 		&& rm /tmp/postmark-approved-wordpress-plugin.zip
+RUN curl -o /tmp/object-cache.php -SL https://raw.githubusercontent.com/rhubarbgroup/redis-cache/master/includes/object-cache.php \
+	&& mv /tmp/object-cache.php /var/www/html/wp-content/object-cache.php
 
+# download svg-support plugin
+RUN curl -o /tmp/svg-support.zip -SL https://downloads.wordpress.org/plugin/svg-support.zip \
+	&& unzip /tmp/svg-support.zip -d /var/www/html/wp-content/plugins \
+	&& rm /tmp/svg-support.zip
+
+# download postmark-approved-wordpress-plugin plugin
+RUN curl -o /tmp/postmark-approved-wordpress-plugin.zip -SL https://downloads.wordpress.org/plugin/postmark-approved-wordpress-plugin.zip \
+	&& unzip /tmp/postmark-approved-wordpress-plugin.zip -d /var/www/html/wp-content/plugins \
+	&& rm /tmp/postmark-approved-wordpress-plugin.zip
+
+# download super-cache plugin
+RUN curl -o /tmp/wp-super-cache.zip -SL https://downloads.wordpress.org/plugin/wp-super-cache.zip \
+	&& unzip /tmp/wp-super-cache.zip -d /var/www/html/wp-content/plugins \
+	&& rm /tmp/wp-super-cache.zip
 
 COPY --chown=www-data:www-data wp-config-docker.php /var/www/html/wp-config.php
 COPY entrypoint.sh /usr/local/bin/
