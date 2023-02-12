@@ -122,6 +122,9 @@ RUN set -eux; \
 	rm /tmp/wordpress.tar.gz; \
 	chown -R www-data:www-data /var/www/html
 
+# copy htaccess
+COPY .htaccess /var/www/html/.htaccess
+
 RUN apt-get update && apt-get install -y redis-server zip
 
 # uploads max size
