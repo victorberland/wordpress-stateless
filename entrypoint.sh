@@ -1,3 +1,8 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+chown -R www-data:www-data /var/www/html
+
 # get last line of wp-config.php
 last_line=$(tail -n 1 /var/www/html/wp-config.php)
 # remove last line of wp-config.php
@@ -10,3 +15,4 @@ echo "define('DISABLE_WP_CRON', true);" >> /var/www/html/wp-config.php
 echo $last_line >> /var/www/html/wp-config.php
 
 service redis-server restart
+exec "$@"

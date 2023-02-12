@@ -159,21 +159,11 @@ COPY plugins /var/www/html/wp-content/plugins
 
 
 COPY --chown=www-data:www-data wp-config-docker.php /var/www/html/wp-config.php
-COPY docker-entrypoint.sh /usr/local/bin/
+COPY entrypoint.sh /usr/local/bin/
 
-# save last (exec) line to file
-RUN tail -n 1 /usr/local/bin/docker-entrypoint.sh > /tmp/execline
-RUN sed -i '$ d' /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# append extras
-COPY extra-entrypoint.sh /usr/local/bin/extra-entrypoint.sh
-RUN cat /usr/local/bin/extra-entrypoint.sh >> /usr/local/bin/docker-entrypoint.sh
+COPY wp-config-docker.php /var/www/html/wp-config.php
 
-# add back exec line
-RUN cat /tmp/execline >> /usr/local/bin/docker-entrypoint.sh
-
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
-
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]
 CMD ["apache2-foreground"]
