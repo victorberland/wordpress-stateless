@@ -1,5 +1,5 @@
 FROM wordpress:latest
-RUN apt-get update && apt-get install -y redis-server
+RUN apt-get update && apt-get install -y redis-server zip
 
 COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
