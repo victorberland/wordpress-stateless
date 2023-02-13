@@ -130,8 +130,8 @@ RUN apt-get update && apt-get install -y redis-server zip
 # uploads max size
 COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
-# remove akismet and hello dolly
-RUN rm -rf /var/www/html/wp-content/plugins/hello.php /var/www/html/wp-content/plugins/akismet
+# remove hello dolly
+RUN rm -rf /var/www/html/wp-content/plugins/hello.php
 
 COPY mu-plugins /var/www/html/wp-content/mu-plugins
 COPY plugins /var/www/html/wp-content/plugins
