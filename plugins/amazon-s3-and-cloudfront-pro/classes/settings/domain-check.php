@@ -1,17 +1,17 @@
 <?php
 
-namespace DeliciousBrains\WP_Offload_Media\Pro\Integrations\Assets;
+namespace DeliciousBrains\WP_Offload_Media\Settings;
 
 use AS3CF_Utils;
-use DeliciousBrains\WP_Offload_Media\Pro\Integrations\Assets\Exceptions\Domain_Check_Exception;
-use DeliciousBrains\WP_Offload_Media\Pro\Integrations\Assets\Exceptions\HTTP_Response_Exception;
-use DeliciousBrains\WP_Offload_Media\Pro\Integrations\Assets\Exceptions\Invalid_Response_Code_Exception;
-use DeliciousBrains\WP_Offload_Media\Pro\Integrations\Assets\Exceptions\Invalid_Response_Type_Exception;
-use DeliciousBrains\WP_Offload_Media\Pro\Integrations\Assets\Exceptions\Malformed_Query_String_Exception;
-use DeliciousBrains\WP_Offload_Media\Pro\Integrations\Assets\Exceptions\Malformed_Response_Exception;
-use DeliciousBrains\WP_Offload_Media\Pro\Integrations\Assets\Exceptions\S3_Bucket_Origin_Exception;
-use DeliciousBrains\WP_Offload_Media\Pro\Integrations\Assets\Exceptions\Ssl_Connection_Exception;
-use DeliciousBrains\WP_Offload_Media\Pro\Integrations\Assets\Exceptions\Unresolveable_Hostname_Exception;
+use DeliciousBrains\WP_Offload_Media\Settings\Exceptions\Domain_Check_Exception;
+use DeliciousBrains\WP_Offload_Media\Settings\Exceptions\HTTP_Response_Exception;
+use DeliciousBrains\WP_Offload_Media\Settings\Exceptions\Invalid_Response_Code_Exception;
+use DeliciousBrains\WP_Offload_Media\Settings\Exceptions\Invalid_Response_Type_Exception;
+use DeliciousBrains\WP_Offload_Media\Settings\Exceptions\Malformed_Query_String_Exception;
+use DeliciousBrains\WP_Offload_Media\Settings\Exceptions\Malformed_Response_Exception;
+use DeliciousBrains\WP_Offload_Media\Settings\Exceptions\S3_Bucket_Origin_Exception;
+use DeliciousBrains\WP_Offload_Media\Settings\Exceptions\Ssl_Connection_Exception;
+use DeliciousBrains\WP_Offload_Media\Settings\Exceptions\Unresolveable_Hostname_Exception;
 use Exception;
 use InvalidArgumentException;
 use Requests_Utility_CaseInsensitiveDictionary;
@@ -22,7 +22,7 @@ class Domain_Check {
 	/**
 	 * @var string domain / hostname
 	 */
-	private $domain;
+	protected $domain = '';
 
 	/**
 	 * @var bool
@@ -81,9 +81,31 @@ class Domain_Check {
 
 		if ( $this->domain === parse_url( network_home_url(), PHP_URL_HOST ) ) {
 			throw new InvalidArgumentException(
-				__( "Domain cannot be the same as the site's domain; use a subdomain instead.", 'amazon-s3-and-cloudfront' )
+				sprintf(
+					__( '<code>%s</code> must not be the same as the site domain. Use a subdomain instead.', 'amazon-s3-and-cloudfront' ),
+					$this->domain
+				)
 			);
 		}
+	}
+
+	/**
+	 * Validate the domain looks like a real domain and return a description of
+	 * any issue found or an empty string if no issue was found.
+	 *
+	 * Convenience function for validate() and check_dns_resolution() that doesn't throw exceptions.
+	 *
+	 * @return string
+	 */
+	public function get_validation_issue(): string {
+		try {
+			$this->validate();
+			$this->check_dns_resolution();
+		} catch ( Exception $e ) {
+			return $e->getMessage();
+		}
+
+		return '';
 	}
 
 	/**
@@ -112,7 +134,8 @@ class Domain_Check {
 	}
 
 	/**
-	 * Test the given URL.
+	 * Test that the given URL works and returns a response that looks like
+	 * a REST response.
 	 *
 	 * @param string $url
 	 *
@@ -120,7 +143,7 @@ class Domain_Check {
 	 *
 	 * @throws Domain_Check_Exception
 	 */
-	public function test_endpoint( string $url ): array {
+	public function test_rest_endpoint( string $url ): array {
 		$this->validate();
 		$this->check_dns_resolution();
 
@@ -142,6 +165,10 @@ class Domain_Check {
 	 * @return string
 	 */
 	protected function prepare_url( string $url ): string {
+		if ( empty( $this->domain() ) ) {
+			return $url;
+		}
+
 		$pull_hostname = AS3CF_Utils::parse_url( $url, PHP_URL_HOST );
 
 		// Force the given domain in the rewritten URL if hostnames do not match.
@@ -165,7 +192,7 @@ class Domain_Check {
 		if ( ! WP_Http::is_ip_address( $this->domain ) && $this->domain === gethostbyname( $this->domain ) ) {
 			throw new Unresolveable_Hostname_Exception(
 				sprintf(
-					__( 'Hostname [%s] could not be resolved to an IP address.', 'amazon-s3-and-cloudfront' ),
+					__( '<code>%s</code> did not resolve to an IP address.', 'amazon-s3-and-cloudfront' ),
 					$this->domain
 				)
 			);
@@ -183,10 +210,14 @@ class Domain_Check {
 	 */
 	protected function get_exception_for_wp_error( WP_Error $error ) {
 		if ( preg_match( '/SSL (certificate problem|operation failed)/i', $error->get_error_message() ) ) {
-			return new Ssl_Connection_Exception( $error->get_error_message() );
+			return new Ssl_Connection_Exception(
+				sprintf( __( 'An HTTPS connection error was encountered: <code>%s</code>.', 'amazon-s3-and-cloudfront' ), $error->get_error_message() )
+			);
 		}
 
-		return new HTTP_Response_Exception( $error->get_error_message() );
+		return new HTTP_Response_Exception(
+			sprintf( __( 'An HTTP connection error was encountered: <code>%s</code>.', 'amazon-s3-and-cloudfront' ), $error->get_error_message() )
+		);
 	}
 
 	/**
@@ -200,7 +231,7 @@ class Domain_Check {
 		if ( $response_code < 200 || $response_code > 399 ) {
 			throw new Invalid_Response_Code_Exception(
 				sprintf(
-					__( 'Invalid response code. Received [%d] from test endpoint.', 'amazon-s3-and-cloudfront' ),
+					__( 'An error was encountered while testing the domain: <code>Received %d from endpoint</code>.', 'amazon-s3-and-cloudfront' ),
 					$response_code
 				)
 			);
@@ -210,16 +241,16 @@ class Domain_Check {
 	/**
 	 * Check that the response type is the correct type.
 	 *
-	 * @param string $content_type
+	 * @param array|string $content_type
 	 *
 	 * @throws Invalid_Response_Type_Exception
 	 */
-	protected function check_response_type( string $content_type ) {
-		if ( ! preg_match( '/^application\/json/i', $content_type ) ) {
+	protected function check_response_type( $content_type ) {
+		if ( is_array( $content_type ) || ! preg_match( '/^application\/json/i', $content_type ) ) {
 			throw new Invalid_Response_Type_Exception(
 				sprintf(
-					__( 'Invalid response type. Received [%s].', 'amazon-s3-and-cloudfront' ),
-					$content_type
+					__( 'An error was encountered while testing the domain: <code>Invalid response type: %s</code>.', 'amazon-s3-and-cloudfront' ),
+					join( ', ', (array) $content_type )
 				)
 			);
 		}
@@ -275,13 +306,13 @@ class Domain_Check {
 
 		if ( null === $raw_body ) {
 			throw new Malformed_Response_Exception(
-				__( 'Malformed response from test endpoint.', 'amazon-s3-and-cloudfront' )
+				__( 'An error was encountered while testing the domain: <code>Malformed response from endpoint</code>.', 'amazon-s3-and-cloudfront' )
 			);
 		}
 
 		if ( empty( $raw_body['ver'] ) ) {
 			throw new Malformed_Query_String_Exception(
-				__( 'Query string missing "ver" parameter. Check your configuration.', 'amazon-s3-and-cloudfront' )
+				__( 'An error was encountered while testing the domain: <code>Query string missing "ver" parameter</code>.', 'amazon-s3-and-cloudfront' )
 			);
 		}
 	}
@@ -296,7 +327,7 @@ class Domain_Check {
 	public static function check_response_headers( $response_headers ) {
 		if ( ! empty( $response_headers['server'] ) && 'AmazonS3' === $response_headers['server'] ) {
 			throw new S3_Bucket_Origin_Exception(
-				__( 'S3 bucket set as CDN origin.', 'amazon-s3-and-cloudfront' )
+				__( 'An error was encountered while testing the domain: <code>S3 bucket set as CDN origin</code>.', 'amazon-s3-and-cloudfront' )
 			);
 		}
 	}

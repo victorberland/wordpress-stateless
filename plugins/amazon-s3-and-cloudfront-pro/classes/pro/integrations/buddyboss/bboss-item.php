@@ -17,6 +17,20 @@ class BBoss_Item extends Item {
 	const CAN_USE_OBJECT_VERSIONING = false;
 
 	/**
+	 * Item's summary type name.
+	 *
+	 * @var string
+	 */
+	protected static $summary_type_name = 'BuddyBoss';
+
+	/**
+	 * Item's summary type.
+	 *
+	 * @var string
+	 */
+	protected static $summary_type = 'bboss';
+
+	/**
 	 * The sprintf() pattern for creating prefix based on source_id.
 	 *
 	 * @var string
