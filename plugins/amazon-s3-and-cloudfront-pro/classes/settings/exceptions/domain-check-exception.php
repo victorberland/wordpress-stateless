@@ -1,6 +1,6 @@
 <?php
 
-namespace DeliciousBrains\WP_Offload_Media\Pro\Integrations\Assets\Exceptions;
+namespace DeliciousBrains\WP_Offload_Media\Settings\Exceptions;
 
 use Exception;
 use ReflectionClass;

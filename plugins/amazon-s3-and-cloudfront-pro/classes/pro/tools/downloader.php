@@ -123,7 +123,7 @@ class Downloader extends Background_Tool {
 	 * @return string
 	 */
 	public static function get_more_info_text() {
-		return __( 'If you\'ve ever had the "Remove Local Media" option on, some Media Library files are likely missing on your server. You can use this tool to download any missing files back to your server.', 'amazon-s3-and-cloudfront' );
+		return __( 'If you\'ve ever had the "Remove Local Media" option on, some media files are likely missing on your server. You can use this tool to download any missing files back to your server.', 'amazon-s3-and-cloudfront' );
 	}
 
 	/**
@@ -159,8 +159,17 @@ class Downloader extends Background_Tool {
 	 *
 	 * @return string
 	 */
-	public function get_queued_status() {
-		return __( 'Downloading Media Library from bucket', 'amazon-s3-and-cloudfront' );
+	public function get_queued_status(): string {
+		return __( 'Downloading media from bucket', 'amazon-s3-and-cloudfront' );
+	}
+
+	/**
+	 * Get short queued status text.
+	 *
+	 * @return string
+	 */
+	public function get_short_queued_status(): string {
+		return _x( 'Downloading…', 'Short tool running message', 'amazon-s3-and-cloudfront' );
 	}
 
 	/**

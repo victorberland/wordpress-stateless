@@ -133,7 +133,6 @@ COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 # remove hello dolly
 RUN rm -rf /var/www/html/wp-content/plugins/hello.php
 
-COPY mu-plugins /var/www/html/wp-content/mu-plugins
 COPY plugins /var/www/html/wp-content/plugins
 
 # download redis-cache plugin
@@ -170,6 +169,11 @@ COPY wp-cache-config.php /var/www/html/wp-content/wp-cache-config.php
 RUN curl -o /tmp/plausible-analytics.zip -SL https://downloads.wordpress.org/plugin/plausible-analytics.zip \
 	&& unzip /tmp/plausible-analytics.zip -d /var/www/html/wp-content/plugins \
 	&& rm /tmp/plausible-analytics.zip
+
+# download norwegian language pack
+RUN curl -o /tmp/norwegian.zip -SL https://downloads.wordpress.org/translation/core/6.0/nb_NO.zip \
+	&& unzip /tmp/norwegian.zip -d /var/www/html/wp-content/languages \
+	&& rm /tmp/norwegian.zip
 
 COPY --chown=www-data:www-data wp-config-docker.php /var/www/html/wp-config.php
 COPY entrypoint.sh /usr/local/bin/

@@ -64,8 +64,17 @@ abstract class Background_Tool_Process extends AS3CF_Background_Process {
 	 */
 	protected function task( $item ) {
 		if ( ! $item['blogs_processed'] ) {
-			// Calculate how many items each blog has
+			// Calculate how many items each blog has,
+			// and return immediately to allow monitoring
+			// processes see initial state.
 			$item = $this->calculate_blog_items( $item );
+
+			if ( $this->all_blog_items_processed( $item ) ) {
+				// Nothing to do, remove from queue.
+				return false;
+			} else {
+				return $item;
+			}
 		}
 
 		if ( $this->all_blog_items_processed( $item ) ) {
@@ -356,21 +365,6 @@ abstract class Background_Tool_Process extends AS3CF_Background_Process {
 		$msg .= '</a>';
 
 		return $msg;
-	}
-
-	/**
-	 * Add cron schedules.
-	 *
-	 * @param array $schedules
-	 *
-	 * @return mixed
-	 */
-	public function cron_schedules( $schedules ) {
-		if ( $this->tool->is_active() ) {
-			return parent::cron_schedules( $schedules );
-		}
-
-		return $schedules;
 	}
 
 	/**

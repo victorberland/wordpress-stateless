@@ -1,2 +1,6 @@
 docker-compose.yml
 .DS_Store
+
+plugins/akismet/
+plugins/hello.php
+plugins/index.php
