@@ -125,7 +125,7 @@ RUN set -eux; \
 # copy htaccess
 COPY .htaccess /var/www/html/.htaccess
 
-RUN apt-get update && apt-get install -y redis-server zip
+RUN apt-get update && apt-get install -y redis-server zip cron
 
 # uploads max size
 COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
@@ -181,6 +181,9 @@ COPY entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 COPY wp-config-docker.php /var/www/html/wp-config.php
+
+HEALTHCHECK --interval=30s --timeout=5s \
+  CMD curl -f http://127.0.0.1:80 | grep -q "wp" || exit 1
 
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["apache2-foreground"]
