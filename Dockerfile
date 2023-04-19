@@ -38,7 +38,9 @@ RUN set -ex; \
 		mysqli \
 		zip \
 	; \
-# https://pecl.php.net/package/imagick
+  pecl install redis; \
+  docker-php-ext-enable redis; \
+  # https://pecl.php.net/package/imagick
 	pecl install imagick-3.6.0; \
 	docker-php-ext-enable imagick; \
 	rm -r /tmp/pear; \
@@ -125,7 +127,7 @@ RUN set -eux; \
 # copy htaccess
 COPY .htaccess /var/www/html/.htaccess
 
-RUN apt-get update && apt-get install -y redis-server zip cron
+RUN apt-get update && apt-get install -y redis-server zip cron wget
 
 # uploads max size
 COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
@@ -134,10 +136,11 @@ COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 RUN rm -rf /var/www/html/wp-content/plugins/hello.php
 
 COPY plugins /var/www/html/wp-content/plugins
+RUN mkdir -p /var/www/html/wp-content/mu-plugins
 
 # download redis-cache plugin
 RUN curl -o /tmp/redis-cache.zip -SL https://downloads.wordpress.org/plugin/redis-cache.zip \
-	&& unzip /tmp/redis-cache.zip -d /var/www/html/wp-content/plugins \
+	&& unzip /tmp/redis-cache.zip -d /var/www/html/wp-content/mu-plugins \
 	&& rm /tmp/redis-cache.zip
 
 # download redis cache object cache dropin
@@ -183,7 +186,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 COPY wp-config-docker.php /var/www/html/wp-config.php
 
 HEALTHCHECK --interval=30s --timeout=5s \
-  CMD curl -f http://127.0.0.1:80 | grep -q "wp" || exit 1
+  CMD wget -qO- http://127.0.0.1:80 | grep -q "wp" || exit 1
 
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["apache2-foreground"]
