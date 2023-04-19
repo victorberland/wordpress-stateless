@@ -136,11 +136,10 @@ COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 RUN rm -rf /var/www/html/wp-content/plugins/hello.php
 
 COPY plugins /var/www/html/wp-content/plugins
-RUN mkdir -p /var/www/html/wp-content/mu-plugins
 
 # download redis-cache plugin
 RUN curl -o /tmp/redis-cache.zip -SL https://downloads.wordpress.org/plugin/redis-cache.zip \
-	&& unzip /tmp/redis-cache.zip -d /var/www/html/wp-content/mu-plugins \
+	&& unzip /tmp/redis-cache.zip -d /var/www/html/wp-content/plugins \
 	&& rm /tmp/redis-cache.zip
 
 # download redis cache object cache dropin
