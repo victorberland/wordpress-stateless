@@ -184,8 +184,8 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 COPY wp-config-docker.php /var/www/html/wp-config.php
 
-HEALTHCHECK --interval=30s --timeout=5s \
-  CMD wget -qO- http://127.0.0.1:80 | grep -q "wp" || exit 1
+#HEALTHCHECK --interval=30s --timeout=5s \
+#  CMD wget -qO- http://127.0.0.1:80 | grep -q "wp" || exit 1
 
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["apache2-foreground"]
