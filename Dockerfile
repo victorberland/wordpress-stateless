@@ -172,6 +172,11 @@ RUN curl -o /tmp/plausible-analytics.zip -SL https://downloads.wordpress.org/plu
 	&& unzip /tmp/plausible-analytics.zip -d /var/www/html/wp-content/plugins \
 	&& rm /tmp/plausible-analytics.zip
 
+# download disable-json-api plugin
+RUN curl -o /tmp/disable-json-api.zip -SL https://downloads.wordpress.org/plugin/disable-json-api.zip \
+	&& unzip /tmp/disable-json-api.zip -d /var/www/html/wp-content/plugins \
+	&& rm /tmp/disable-json-api.zip
+
 # download norwegian language pack
 RUN curl -o /tmp/norwegian.zip -SL https://downloads.wordpress.org/translation/core/6.0/nb_NO.zip \
 	&& unzip /tmp/norwegian.zip -d /var/www/html/wp-content/languages \
