@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
-# chown -R www-data:www-data /var/www/html
-
 
 # cron for wp-cron
 line="* * * * * www-data /usr/local/bin/php /var/www/html/wp-cron.php > /dev/null 2>&1"

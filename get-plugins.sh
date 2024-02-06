@@ -17,4 +17,4 @@ rm -rf /var/www/html/wp-content/plugins/akismet
 
 # ensure permissions
 chown -R www-data:www-data /var/www/html/wp-content/plugins
-
+chmod -R 755 /var/www/html/wp-content/plugins
