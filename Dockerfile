@@ -9,7 +9,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libpng-dev \
   libwebp-dev \
   libzip-dev \
-  zip
+  zip \
+  unzip \
+  redis-server \
+  cron \
+  wget \
+  && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-configure gd \
   --with-freetype \
@@ -82,8 +87,6 @@ RUN set -eux; \
 
 # copy htaccess
 COPY .htaccess /var/www/html/.htaccess
-
-RUN apt-get update && apt-get install -y redis-server zip cron wget
 
 # uploads max size
 COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
