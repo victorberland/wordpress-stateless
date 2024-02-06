@@ -133,21 +133,9 @@ RUN apt-get update && apt-get install -y redis-server zip cron wget
 # uploads max size
 COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
-COPY plugins /var/www/html/wp-content/plugins
-
-# download redis-cache plugin
-RUN curl -o /tmp/redis-cache.zip -SL https://downloads.wordpress.org/plugin/redis-cache.zip \
-	&& unzip /tmp/redis-cache.zip -d /var/www/html/wp-content/plugins \
-	&& rm /tmp/redis-cache.zip
-
 # download redis cache object cache dropin
 RUN curl -o /tmp/object-cache.php -SL https://raw.githubusercontent.com/rhubarbgroup/redis-cache/master/includes/object-cache.php \
 	&& mv /tmp/object-cache.php /var/www/html/wp-content/object-cache.php
-
-# download super-cache plugin
-RUN curl -o /tmp/wp-super-cache.zip -SL https://downloads.wordpress.org/plugin/wp-super-cache.zip \
-	&& unzip /tmp/wp-super-cache.zip -d /var/www/html/wp-content/plugins \
-	&& rm /tmp/wp-super-cache.zip
 
 # download advanced-cache.php to enable super-cache
 RUN curl -o /tmp/advanced-cache.php -SL https://raw.githubusercontent.com/Automattic/wp-super-cache/trunk/advanced-cache.php \
@@ -162,6 +150,8 @@ RUN curl -o /tmp/norwegian.zip -SL https://downloads.wordpress.org/translation/c
 
 # permissions
 COPY --chown=www-data:www-data wp-config-docker.php /var/www/html/wp-config.php
+RUN chmod 640 /var/www/html/wp-config.php
+RUN chown www-data:www-data /var/www/html/wp-content
 
 # entrypoint script
 COPY entrypoint.sh /usr/local/bin/
