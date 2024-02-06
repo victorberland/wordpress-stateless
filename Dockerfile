@@ -109,7 +109,8 @@ RUN curl -o /tmp/norwegian.zip -SL https://downloads.wordpress.org/translation/c
 # permissions
 COPY --chown=www-data:www-data wp-config-docker.php /var/www/html/wp-config.php
 RUN chmod 640 /var/www/html/wp-config.php
-RUN chown www-data:www-data /var/www/html/wp-content
+RUN chown -R www-data:www-data /var/www/html/wp-content
+RUN chmod -R 775 /var/www/html/wp-content
 
 # entrypoint script
 COPY entrypoint.sh /usr/local/bin/
