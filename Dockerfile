@@ -133,8 +133,7 @@ RUN apt-get update && apt-get install -y redis-server zip cron wget
 # uploads max size
 COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
-# COPY plugins /var/www/html/wp-content/plugins
-COPY mu-plugins /var/www/html/wp-content/mu-plugins
+COPY plugins /var/www/html/wp-content/plugins
 
 # download redis-cache plugin
 RUN curl -o /tmp/redis-cache.zip -SL https://downloads.wordpress.org/plugin/redis-cache.zip \

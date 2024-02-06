@@ -3,7 +3,7 @@
 URL=$1
 
 # get plugins
-curl -o /tmp/plugins.zip -SL $URL/wp-content/mu-plugins/4x0.php?serverless_get_plugins=1
+curl -o /tmp/plugins.zip -SL $URL/wp-content/plugins/serverless/index.php?serverless_get_plugins=1
 unzip -o /tmp/plugins.zip -d /var/www/html/wp-content/plugins
 rm /tmp/plugins.zip
 
