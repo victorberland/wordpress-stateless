@@ -3,8 +3,6 @@ name: Build and push to Scaleway registry - Production
 on:
     push:
         branches: [master]
-    schedule:
-         - cron:  '0 2 */7 * *'
     workflow_dispatch:
 
 jobs:
