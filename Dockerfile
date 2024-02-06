@@ -15,7 +15,7 @@ RUN set -ex; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	\
 	apt-get update; \
-	apt-get install -y --no-install-recommends \
+	apt-get install -y \
 		libfreetype6-dev \
 		libicu-dev \
 		libjpeg-dev \
