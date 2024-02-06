@@ -23,6 +23,7 @@ RUN set -ex; \
 		libpng-dev \
 		libwebp-dev \
 		libzip-dev \
+    zip \
 	; \
 	\
 	docker-php-ext-configure gd \
@@ -132,10 +133,8 @@ RUN apt-get update && apt-get install -y redis-server zip cron wget
 # uploads max size
 COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
-# remove hello dolly
-RUN rm -rf /var/www/html/wp-content/plugins/hello.php
-
-COPY plugins /var/www/html/wp-content/plugins
+# COPY plugins /var/www/html/wp-content/plugins
+COPY mu-plugins /var/www/html/wp-content/mu-plugins
 
 # download redis-cache plugin
 RUN curl -o /tmp/redis-cache.zip -SL https://downloads.wordpress.org/plugin/redis-cache.zip \
@@ -145,16 +144,6 @@ RUN curl -o /tmp/redis-cache.zip -SL https://downloads.wordpress.org/plugin/redi
 # download redis cache object cache dropin
 RUN curl -o /tmp/object-cache.php -SL https://raw.githubusercontent.com/rhubarbgroup/redis-cache/master/includes/object-cache.php \
 	&& mv /tmp/object-cache.php /var/www/html/wp-content/object-cache.php
-
-# download svg-support plugin
-RUN curl -o /tmp/svg-support.zip -SL https://downloads.wordpress.org/plugin/svg-support.zip \
-	&& unzip /tmp/svg-support.zip -d /var/www/html/wp-content/plugins \
-	&& rm /tmp/svg-support.zip
-
-# download postmark-approved-wordpress-plugin plugin
-RUN curl -o /tmp/postmark-approved-wordpress-plugin.zip -SL https://downloads.wordpress.org/plugin/postmark-approved-wordpress-plugin.zip \
-	&& unzip /tmp/postmark-approved-wordpress-plugin.zip -d /var/www/html/wp-content/plugins \
-	&& rm /tmp/postmark-approved-wordpress-plugin.zip
 
 # download super-cache plugin
 RUN curl -o /tmp/wp-super-cache.zip -SL https://downloads.wordpress.org/plugin/wp-super-cache.zip \
@@ -167,30 +156,23 @@ RUN curl -o /tmp/advanced-cache.php -SL https://raw.githubusercontent.com/Automa
 
 COPY wp-cache-config.php /var/www/html/wp-content/wp-cache-config.php
 
-# download plausible-analytics plugin
-RUN curl -o /tmp/plausible-analytics.zip -SL https://downloads.wordpress.org/plugin/plausible-analytics.zip \
-	&& unzip /tmp/plausible-analytics.zip -d /var/www/html/wp-content/plugins \
-	&& rm /tmp/plausible-analytics.zip
-
-# download disable-json-api plugin
-RUN curl -o /tmp/disable-json-api.zip -SL https://downloads.wordpress.org/plugin/disable-json-api.zip \
-	&& unzip /tmp/disable-json-api.zip -d /var/www/html/wp-content/plugins \
-	&& rm /tmp/disable-json-api.zip
-
 # download norwegian language pack
 RUN curl -o /tmp/norwegian.zip -SL https://downloads.wordpress.org/translation/core/6.0/nb_NO.zip \
 	&& unzip /tmp/norwegian.zip -d /var/www/html/wp-content/languages \
 	&& rm /tmp/norwegian.zip
 
+# permissions
 COPY --chown=www-data:www-data wp-config-docker.php /var/www/html/wp-config.php
-COPY entrypoint.sh /usr/local/bin/
 
+# entrypoint script
+COPY entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
+# wp-config
 COPY wp-config-docker.php /var/www/html/wp-config.php
 
-#HEALTHCHECK --interval=30s --timeout=5s \
-#  CMD wget -qO- http://127.0.0.1:80 | grep -q "wp" || exit 1
+# get-plugins script
+COPY get-plugins.sh /usr/local/bin/get-plugins.sh
 
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["apache2-foreground"]
