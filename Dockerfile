@@ -30,7 +30,6 @@ RUN docker-php-ext-install \
 
 RUN pecl install redis imagick \
   && docker-php-ext-enable redis imagick \
-  && rm -rf /tmp/pear
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
