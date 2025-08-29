@@ -1,18 +1,26 @@
-name: Build and push to Scaleway registry - Production
+name: Build and push to registry
 
 on:
-    push:
-        branches: [master]
-    workflow_dispatch:
+  push:
+    branches: [master]
+  workflow_dispatch:
 
 jobs:
-  build:
+  docker:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - uses: actions/checkout@v2
-      - name: Login to registry
-        run: echo ${{ secrets.SCALEWAY_SECRET_KEY }} | docker login rg.fr-par.scw.cloud/4x0-net -u nologin --password-stdin
-      - name: Build and tag the Docker image
-        run: docker build -t rg.fr-par.scw.cloud/4x0-net/wordpress-serverless:latest .
-      - name: Push the Docker image to the registry
-        run: docker push rg.fr-par.scw.cloud/4x0-net/wordpress-serverless:latest
+      - name: Login to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ghcr.io/victorberland/wordpress-serverless:latest
