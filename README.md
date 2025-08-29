@@ -47,7 +47,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ghcr.io/${{ github.repository }}:{{ github.run_number }}, ghcr.io/${{ github.repository }}:latest
+          tags: ghcr.io/${{ github.repository }}:${{ github.run_number }}, ghcr.io/${{ github.repository }}:latest
 ```
 This will build the image and push it to GitHub Container Registry with the tag `latest` as well as the run number for versioning.
 
