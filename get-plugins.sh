@@ -12,8 +12,20 @@ chown -R www-data:www-data /var/www/html/wp-content/plugins
 # remove hello dolly
 rm -rf /var/www/html/wp-content/plugins/hello.php
 
-# remove akismet
-rm -rf /var/www/html/wp-content/plugins/akismet
+# download latest version of akismet
+curl -o /tmp/akismet.zip -SL https://downloads.wordpress.org/plugin/akismet.latest-stable.zip
+unzip -o /tmp/akismet.zip -d /var/www/html/wp-content/plugins
+rm /tmp/akismet.zip
+
+# download latest version of redis object cache
+curl -o /tmp/redis-object-cache.zip -SL https://downloads.wordpress.org/plugin/redis-cache.latest-stable.zip
+unzip -o /tmp/redis-object-cache.zip -d /var/www/html/wp-content/plugins
+rm /tmp/redis-object-cache.zip
+
+# download latest version of wp super cache
+curl -o /tmp/wp-super-cache.zip -SL https://downloads.wordpress.org/plugin/wp-super-cache.latest-stable.zip
+unzip -o /tmp/wp-super-cache.zip -d /var/www/html/wp-content/plugins
+rm /tmp/wp-super-cache.zip
 
 # ensure permissions
 chown -R www-data:www-data /var/www/html/wp-content/plugins
