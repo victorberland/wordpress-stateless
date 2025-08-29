@@ -180,5 +180,8 @@ COPY wp-config-docker.php /var/www/html/wp-config.php
 # get-plugins script
 COPY get-plugins.sh /usr/local/bin/get-plugins.sh
 
+# serverless plugin
+COPY plugins /opt/plugins
+
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["apache2-foreground"]

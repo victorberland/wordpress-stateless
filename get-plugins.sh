@@ -27,6 +27,9 @@ curl -o /tmp/wp-super-cache.zip -SL https://downloads.wordpress.org/plugin/wp-su
 unzip -o /tmp/wp-super-cache.zip -d /var/www/html/wp-content/plugins
 rm /tmp/wp-super-cache.zip
 
+# plugins from image
+mv /opt/plugins/* /var/www/html/wp-content/plugins
+
 # ensure permissions
 chown -R www-data:www-data /var/www/html/wp-content/plugins
 chmod -R 755 /var/www/html/wp-content/plugins
