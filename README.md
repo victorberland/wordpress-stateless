@@ -1,27 +1,58 @@
 # Serverless WordPress
-Docker image for running WordPress on non-persistent serverless containers. Tested on Scaleway.
-Includes Redis and has WP_CACHE enabled.
+Docker image for running WordPress on non-persistent serverless containers. Tested in a Kubernetes cluster.
 
-Uses Unison with an external server (connection over SSH, server must have the Unison package installed) for syncing files.
+## Includes
+- Redis
+- WP Super Cache
+- Akismet
 
-Still a WIP, but feedback is appreciated.
+## How It Works
 
-Minimum usable resource plan on Scaleway is 512 MB - 280 mVCPU plan, but could do with more CPU power for a nicer admin experience. A frontend caching plugin must be used for a good user experience.
+## You Will Also Need
+- A MySQL database. Most cloud providers offer managed databases.
+- An Object Storage provider for media uploads and a plugin to handle uploads. Tested with https://deliciousbrains.com/wp-offload-media/, but there are other similar plugins available.
 
-# Usage
-Either build the image yourself or pull from `rg.fr-par.scw.cloud/4x0-net/wordpress-serverless:latest`
+## In Your Project Repository
+Create a `Dockerfile` file with the following contents:
+```dockerfile
+FROM ghcr.io/victorberland/wordpress-serverless:latest
+RUN get-plugins.sh https://example.com
+COPY --chown=www-data:www-data wp-content /var/www/html/wp-content
+```
+Replace `https://example.com` with the URL of your WordPress site.
 
-## Environment variables
+### GitHub Actions Workflow example
+If you are using GitHub Actions, you can use the following workflow to build and push the image to GitHub Container Registry by creating a `.github/workflows/build.yml` file with the following contents:
+```yaml
+name: Build and push to registry
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Login to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-### Serverless specific
-- `SSH_HOST` Your SSH endpoint with Unison installed
-- `SSH_PORT`
-- `SSH_USERNAME`
-- `SSH_PASSWORD` **Set as secret**
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ghcr.io/${{ github.repository }}:{{ github.run_number }}, ghcr.io/${{ github.repository }}:latest
+```
+This will build the image and push it to GitHub Container Registry with the tag `latest` as well as the run number for versioning.
 
-
-### Default Docker WordPress
-- `WORDPRESS_DB_HOST` Host and port
+## Environment Variables
+- `WORDPRESS_DB_HOST` Database host and port
 - `WORDPRESS_DB_NAME`
 - `WORDPRESS_DB_USER`
 - `WORDPRESS_DB_PASSWORD` **Set as secret**
