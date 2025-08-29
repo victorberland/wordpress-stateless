@@ -1,12 +1,12 @@
 <?php
 /*
- * Plugin Name: Serverless WP
- * Description: Functions to make WordPress work in a serverless environment
+ * Plugin Name: Stateless WP
+ * Description: Functions to make WordPress work in a stateless environment
  * Version: 1.0
  * Author: 4x0
  */
 
-function serverless_get_plugins() {
+function stateless_get_plugins() {
   require_once( dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) . '/wp-load.php' );
 
   // zip up all plugins in the plugins directory
@@ -63,8 +63,8 @@ function serverless_get_plugins() {
   exit;
 }
 // type a comment that explains how to run the function from the browser
-// http://example.com/wp-content/plugins/4x0.php?serverless_get_plugins=1
+// http://example.com/wp-content/plugins/4x0.php?stateless_get_plugins=1
 
-if ( isset( $_GET['serverless_get_plugins'] ) ) {
-  serverless_get_plugins();
+if ( isset( $_GET['stateless_get_plugins'] ) ) {
+  stateless_get_plugins();
 }

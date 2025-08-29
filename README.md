@@ -1,5 +1,5 @@
 # Serverless WordPress
-Docker image for running WordPress on non-persistent serverless containers. Tested in a Kubernetes cluster.
+Docker image for running WordPress on non-persistent stateless containers. Tested in a Kubernetes cluster.
 
 ## Includes
 - Redis
@@ -8,6 +8,11 @@ Docker image for running WordPress on non-persistent serverless containers. Test
 
 ## How It Works
 
+### What Does This Mean in Practice?
+- Theme changes are pushed to the image at build
+- Plugins can be downloaded and updated in wp-admin as one usually would
+- Media uploads are stored in object storage
+
 ## You Will Also Need
 - A MySQL database. Most cloud providers offer managed databases.
 - An Object Storage provider for media uploads and a plugin to handle uploads. Tested with https://deliciousbrains.com/wp-offload-media/, but there are other similar plugins available.
@@ -15,13 +20,13 @@ Docker image for running WordPress on non-persistent serverless containers. Test
 ## In Your Project Repository
 Create a `Dockerfile` file with the following contents:
 ```dockerfile
-FROM ghcr.io/victorberland/wordpress-serverless:latest
+FROM ghcr.io/victorberland/wordpress-stateless:latest
 RUN get-plugins.sh https://example.com
 COPY --chown=www-data:www-data wp-content /var/www/html/wp-content
 ```
 Replace `https://example.com` with the URL of your WordPress site.
 
-### GitHub Actions Workflow example
+### GitHub Actions Workflow Example
 If you are using GitHub Actions, you can use the following workflow to build and push the image to GitHub Container Registry by creating a `.github/workflows/build.yml` file with the following contents:
 ```yaml
 name: Build and push to registry
@@ -55,4 +60,6 @@ This will build the image and push it to GitHub Container Registry with the tag 
 - `WORDPRESS_DB_HOST` Database host and port
 - `WORDPRESS_DB_NAME`
 - `WORDPRESS_DB_USER`
-- `WORDPRESS_DB_PASSWORD` **Set as secret**
+- `WORDPRESS_DB_PASSWORD` Database password
+- `PLUGINS_KEY` Random string used for the plugin syncing step.
+You can also specify any other environment variables supported by the official WordPress image.
