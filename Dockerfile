@@ -1,35 +1,82 @@
+# Based on https://github.com/docker-library/wordpress/blob/master/latest/php8.4/apache/Dockerfile
+
 FROM php:8.4-apache
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  ghostscript \
-  libfreetype6-dev \
-  libicu-dev \
-  libjpeg-dev \
-  libmagickwand-dev \
-  libpng-dev \
-  libwebp-dev \
-  libzip-dev \
-  zip \
-  unzip \
-  redis-server \
-  wget \
-  && rm -rf /var/lib/apt/lists/*
+# persistent dependencies
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+# Ghostscript is required for rendering PDF previews
+		ghostscript \
+    zip \
+    unzip \
+    redis-server \
+    wget \
+	; \
+	rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-configure gd \
-  --with-freetype \
-  --with-jpeg \
-  --with-webp
-
-RUN docker-php-ext-install \
-  bcmath \
-  exif \
-  gd \
-  intl \
-  mysqli \
-  zip
-
-RUN pecl install redis imagick \
-  && docker-php-ext-enable redis imagick \
+# install the PHP extensions we need (https://make.wordpress.org/hosting/handbook/handbook/server-environment/#php-extensions)
+RUN set -ex; \
+	\
+	savedAptMark="$(apt-mark showmanual)"; \
+	\
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+		libavif-dev \
+		libfreetype6-dev \
+		libicu-dev \
+		libjpeg-dev \
+		libmagickwand-dev \
+		libpng-dev \
+		libwebp-dev \
+		libzip-dev \
+	; \
+	\
+	docker-php-ext-configure gd \
+		--with-avif \
+		--with-freetype \
+		--with-jpeg \
+		--with-webp \
+	; \
+	docker-php-ext-install -j "$(nproc)" \
+		bcmath \
+		exif \
+		gd \
+		intl \
+		mysqli \
+		zip \
+	; \
+# https://pecl.php.net/package/imagick
+	pecl install imagick-3.8.0 redis; \
+	docker-php-ext-enable imagick redis; \
+	rm -r /tmp/pear; \
+	\
+# some misbehaving extensions end up outputting to stdout 🙈 (https://github.com/docker-library/wordpress/issues/669#issuecomment-993945967)
+	out="$(php -r 'exit(0);')"; \
+	[ -z "$out" ]; \
+	err="$(php -r 'exit(0);' 3>&1 1>&2 2>&3)"; \
+	[ -z "$err" ]; \
+	\
+	extDir="$(php -r 'echo ini_get("extension_dir");')"; \
+	[ -d "$extDir" ]; \
+# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
+	apt-mark auto '.*' > /dev/null; \
+	apt-mark manual $savedAptMark; \
+	ldd "$extDir"/*.so \
+		| awk '/=>/ { so = $(NF-1); if (index(so, "/usr/local/") == 1) { next }; gsub("^/(usr/)?", "", so); printf "*%s\n", so }' \
+		| sort -u \
+		| xargs -r dpkg-query --search \
+		| cut -d: -f1 \
+		| sort -u \
+		| xargs -rt apt-mark manual; \
+	\
+	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+	rm -rf /var/lib/apt/lists/*; \
+	\
+	! { ldd "$extDir"/*.so | grep 'not found'; }; \
+# check for output like "PHP Warning:  PHP Startup: Unable to load dynamic library 'foo' (tried: ...)
+	err="$(php --version 3>&1 1>&2 2>&3)"; \
+	[ -z "$err" ]
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
@@ -64,24 +111,37 @@ RUN set -eux; \
 	{ \
 		echo 'RemoteIPHeader X-Forwarded-For'; \
 # these IP ranges are reserved for "private" use and should thus *usually* be safe inside Docker
-		echo 'RemoteIPTrustedProxy 10.0.0.0/8'; \
-		echo 'RemoteIPTrustedProxy 172.16.0.0/12'; \
-		echo 'RemoteIPTrustedProxy 192.168.0.0/16'; \
-		echo 'RemoteIPTrustedProxy 169.254.0.0/16'; \
-		echo 'RemoteIPTrustedProxy 127.0.0.0/8'; \
+		echo 'RemoteIPInternalProxy 10.0.0.0/8'; \
+		echo 'RemoteIPInternalProxy 172.16.0.0/12'; \
+		echo 'RemoteIPInternalProxy 192.168.0.0/16'; \
+		echo 'RemoteIPInternalProxy 169.254.0.0/16'; \
+		echo 'RemoteIPInternalProxy 127.0.0.0/8'; \
 	} > /etc/apache2/conf-available/remoteip.conf; \
 	a2enconf remoteip; \
 # https://github.com/docker-library/wordpress/issues/383#issuecomment-507886512
 # (replace all instances of "%h" with "%a" in LogFormat)
 	find /etc/apache2 -type f -name '*.conf' -exec sed -ri 's/([[:space:]]*LogFormat[[:space:]]+"[^"]*)%h([^"]*")/\1%a\2/g' '{}' +
 
-
 # download latest WordPress and extract it to /var/www/html
 RUN set -eux; \
 	curl -o /tmp/wordpress.tar.gz -fSL "https://wordpress.org/latest.tar.gz"; \
 	tar -xzf /tmp/wordpress.tar.gz -C /var/www/html --strip-components=1; \
 	rm /tmp/wordpress.tar.gz; \
-	chown -R www-data:www-data /var/www/html
+	chown -R www-data:www-data /var/www/html; \
+  \
+  # download redis object cache dropin
+  curl -o /tmp/object-cache.php -SL https://raw.githubusercontent.com/rhubarbgroup/redis-cache/master/includes/object-cache.php \
+	&& mv /tmp/object-cache.php /var/www/html/wp-content/object-cache.php; \
+  \
+  # download  advanced-cache.php to enable super-cache
+  curl -o /tmp/advanced-cache.php -SL https://raw.githubusercontent.com/Automattic/wp-super-cache/trunk/advanced-cache.php \
+	&& mv /tmp/advanced-cache.php /var/www/html/wp-content/advanced-cache.php; \
+  \
+  # download nororwegian language pack
+  curl -o /tmp/norwegian.zip -SL https://downloads.wordpress.org/translation/core/6.0/nb_NO.zip \
+	&& unzip /tmp/norwegian.zip -d /var/www/html/wp-content/languages \
+	&& rm /tmp/norwegian.zip
+
 
 # copy htaccess
 COPY .htaccess /var/www/html/.htaccess
@@ -89,26 +149,26 @@ COPY .htaccess /var/www/html/.htaccess
 # uploads max size
 COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
-# download redis cache object cache dropin
-RUN curl -o /tmp/object-cache.php -SL https://raw.githubusercontent.com/rhubarbgroup/redis-cache/master/includes/object-cache.php \
-	&& mv /tmp/object-cache.php /var/www/html/wp-content/object-cache.php
-
-# download advanced-cache.php to enable super-cache
-RUN curl -o /tmp/advanced-cache.php -SL https://raw.githubusercontent.com/Automattic/wp-super-cache/trunk/advanced-cache.php \
-	&& mv /tmp/advanced-cache.php /var/www/html/wp-content/advanced-cache.php
+# # download redis cache object cache dropin
+# RUN curl -o /tmp/object-cache.php -SL https://raw.githubusercontent.com/rhubarbgroup/redis-cache/master/includes/object-cache.php \
+# 	&& mv /tmp/object-cache.php /var/www/html/wp-content/object-cache.php
+#
+# # download advanced-cache.php to enable super-cache
+# RUN curl -o /tmp/advanced-cache.php -SL https://raw.githubusercontent.com/Automattic/wp-super-cache/trunk/advanced-cache.php \
+# 	&& mv /tmp/advanced-cache.php /var/www/html/wp-content/advanced-cache.php
 
 COPY wp-cache-config.php /var/www/html/wp-content/wp-cache-config.php
 
-# download norwegian language pack
-RUN curl -o /tmp/norwegian.zip -SL https://downloads.wordpress.org/translation/core/6.0/nb_NO.zip \
-	&& unzip /tmp/norwegian.zip -d /var/www/html/wp-content/languages \
-	&& rm /tmp/norwegian.zip
+# # download norwegian language pack
+# RUN curl -o /tmp/norwegian.zip -SL https://downloads.wordpress.org/translation/core/6.0/nb_NO.zip \
+# 	&& unzip /tmp/norwegian.zip -d /var/www/html/wp-content/languages \
+# 	&& rm /tmp/norwegian.zip
 
 # permissions
 COPY --chown=www-data:www-data wp-config-docker.php /var/www/html/wp-config.php
-RUN chmod 640 /var/www/html/wp-config.php
-RUN chown -R www-data:www-data /var/www/html/wp-content
-RUN chmod -R 775 /var/www/html/wp-content
+RUN chmod 640 /var/www/html/wp-config.php; \
+    chown -R www-data:www-data /var/www/html/wp-content; \
+    chmod -R 775 /var/www/html/wp-content
 
 # entrypoint script
 COPY entrypoint.sh /usr/local/bin/
