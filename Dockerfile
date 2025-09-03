@@ -146,10 +146,8 @@ RUN set -eux; \
 # copy htaccess
 COPY .htaccess /var/www/html/.htaccess
 
-# uploads max size
+# PHP ini
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-COPY uploads.ini /opt/uploads.ini
-RUN mv "/opt/uploads.ini" "$PHP_INI_DIR/conf.d/uploads.ini"
 
 # # download redis cache object cache dropin
 # RUN curl -o /tmp/object-cache.php -SL https://raw.githubusercontent.com/rhubarbgroup/redis-cache/master/includes/object-cache.php \
