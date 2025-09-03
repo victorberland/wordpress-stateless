@@ -1,5 +1,5 @@
-# Serverless WordPress
-Docker image for running WordPress on non-persistent stateless containers. Tested in a Kubernetes cluster.
+# Stateless WordPress
+Docker image for running WordPress on non-persistent stateless containers. Tested in a Kubernetes cluster and on Scaleway serverless containers.
 
 ## Includes
 - Redis

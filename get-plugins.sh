@@ -30,6 +30,10 @@ rm /tmp/wp-super-cache.zip
 # plugins from image
 mv /opt/plugins/* /var/www/html/wp-content/plugins
 
+# list plugins
+echo "Plugins folder now contains:"
+ls /var/www/html/wp-content/plugins
+
 # ensure permissions
 chown -R www-data:www-data /var/www/html/wp-content/plugins
 chmod -R 755 /var/www/html/wp-content/plugins
