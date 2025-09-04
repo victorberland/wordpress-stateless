@@ -4,7 +4,7 @@ URL=$1
 
 # get plugins
 rm -rf /var/www/html/wp-content/plugins
-curl -o /tmp/plugins.zip -SL $URL/wp-content/plugins/stateless/index.php?stateless_get_plugins=1&stateless_plugins_key=$STATELESS_PLUGINS_KEY
+curl -o /tmp/plugins.zip -SLv $URL/wp-content/plugins/stateless/index.php?stateless_get_plugins=1&stateless_plugins_key=$STATELESS_PLUGINS_KEY
 unzip -o /tmp/plugins.zip -d /var/www/html/wp-content/plugins
 rm /tmp/plugins.zip
 chown -R www-data:www-data /var/www/html/wp-content/plugins
