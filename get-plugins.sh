@@ -1,12 +1,11 @@
 #!/bin/bash
 
 URL=$1
+PLUGINS_KEY=$2
 
 # get plugins
 rm -rf /var/www/html/wp-content/plugins
-echo "Downloading plugins..."
-echo "Using key: $STATELESS_PLUGINS_KEY"
-curl -o /tmp/plugins.zip -SLv $URL/wp-content/plugins/stateless/index.php?stateless_get_plugins=$STATELESS_PLUGINS_KEY
+curl -o /tmp/plugins.zip -SL $URL/wp-content/plugins/stateless/index.php?stateless_get_plugins=$PLUGINS_KEY
 unzip -o /tmp/plugins.zip -d /var/www/html/wp-content/plugins
 rm /tmp/plugins.zip
 chown -R www-data:www-data /var/www/html/wp-content/plugins
