@@ -61,6 +61,6 @@ function stateless_get_plugins() {
   exit;
 }
 
-if ( isset( $_GET['stateless_get_plugins'] && $_GET['stateless_plugins_key'] === getenv( 'STATELESS_PLUGINS_KEY' ) ) ) {
+if ( isset( $_GET['stateless_get_plugins'] ) && $_GET['stateless_plugins_key'] === getenv( 'STATELESS_PLUGINS_KEY' ) ) {
   stateless_get_plugins();
 }
