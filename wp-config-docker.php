@@ -133,10 +133,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 define('WP_CACHE', true);
 define('WPCACHEHOME', '/var/www/html/wp-content/plugins/wp-super-cache/');
 
-@ini_set('upload_max_filesize', '800M');
-@ini_set('post_max_size', '800M');
-@ini_set('max_execution_time', 300);
-@ini_set('memory_limit', '512M');
-
 /** Sets up WordPress vars and included files. */
 require_once ABSPATH . 'wp-settings.php';
