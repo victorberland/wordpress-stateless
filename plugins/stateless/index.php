@@ -21,25 +21,23 @@ function stateless_get_plugins() {
     $zip->addFile( $file, basename( $file ) );
   }
 
+  // folders
   foreach ( $plugins as $plugin ) {
     $zip->addEmptyDir( basename( $plugin ) );
-    // go in recursive and add all files to their specific plugin folders, and not the root of the zip
     $files = new RecursiveIteratorIterator(
       new RecursiveDirectoryIterator( $plugin ),
       RecursiveIteratorIterator::LEAVES_ONLY
     );
     foreach ( $files as $name => $file ) {
-      // skip directories (they would be added automatically)
       if ( ! $file->isDir() ) {
-        // get real and relative path for current file
         $filePath = $file->getRealPath();
         $relativePath = substr( $filePath, strlen( $plugin ) + 1 );
-        // add current file to archive
         $zip->addFile( $filePath, basename( $plugin ) . '/' . $relativePath );
       }
     }
   }
   $zip->close();
+
   // stream the file to the client
   if ( headers_sent() ) {
     echo 'HTTP header already sent';
@@ -62,9 +60,7 @@ function stateless_get_plugins() {
   }
   exit;
 }
-// type a comment that explains how to run the function from the browser
-// http://example.com/wp-content/plugins/4x0.php?stateless_get_plugins=1
 
-if ( isset( $_GET['stateless_get_plugins'] ) ) {
+if ( isset( $_GET['stateless_get_plugins'] && $_GET['stateless_plugins_key'] === getenv( 'STATELESS_PLUGINS_KEY' ) ) ) {
   stateless_get_plugins();
 }
