@@ -28,7 +28,7 @@ unzip -o /tmp/wp-super-cache.zip -d /var/www/html/wp-content/plugins
 rm /tmp/wp-super-cache.zip
 
 # plugins from image
-mv /opt/plugins/* /var/www/html/wp-content/plugins
+mv -n /opt/plugins/* /var/www/html/wp-content/plugins
 
 # list plugins
 echo "Plugins folder now contains:"
