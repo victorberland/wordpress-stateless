@@ -56,7 +56,7 @@ jobs:
 ```
 This will build the image and push it to GitHub Container Registry with the tag `latest` as well as the run number for versioning.
 
-Make sure to create an environment variable named `STATELESS_PLUGINS_KEY` with a random string value. This must match the value of the `STATELESS_PLUGINS_KEY` environment variable in your WordPress container.
+Make sure to create a secret named `STATELESS_PLUGINS_KEY` with a random string value. This must match the value of the `STATELESS_PLUGINS_KEY` environment variable in your WordPress container.
 
 ## Environment Variables
 - `WORDPRESS_DB_HOST` Database host and port
