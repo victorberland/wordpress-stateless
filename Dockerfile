@@ -149,20 +149,8 @@ COPY .htaccess /var/www/html/.htaccess
 # PHP ini
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-# # download redis cache object cache dropin
-# RUN curl -o /tmp/object-cache.php -SL https://raw.githubusercontent.com/rhubarbgroup/redis-cache/master/includes/object-cache.php \
-# 	&& mv /tmp/object-cache.php /var/www/html/wp-content/object-cache.php
-#
-# # download advanced-cache.php to enable super-cache
-# RUN curl -o /tmp/advanced-cache.php -SL https://raw.githubusercontent.com/Automattic/wp-super-cache/trunk/advanced-cache.php \
-# 	&& mv /tmp/advanced-cache.php /var/www/html/wp-content/advanced-cache.php
-
+# WP cache config
 COPY wp-cache-config.php /var/www/html/wp-content/wp-cache-config.php
-
-# # download norwegian language pack
-# RUN curl -o /tmp/norwegian.zip -SL https://downloads.wordpress.org/translation/core/6.0/nb_NO.zip \
-# 	&& unzip /tmp/norwegian.zip -d /var/www/html/wp-content/languages \
-# 	&& rm /tmp/norwegian.zip
 
 # permissions
 COPY --chown=www-data:www-data wp-config-docker.php /var/www/html/wp-config.php
