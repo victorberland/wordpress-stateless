@@ -27,6 +27,9 @@ curl -o /tmp/wp-super-cache.zip -SL https://downloads.wordpress.org/plugin/wp-su
 unzip -o /tmp/wp-super-cache.zip -d /var/www/html/wp-content/plugins
 rm /tmp/wp-super-cache.zip
 
+# remove downloaded version of stateless plugin
+rm -rf /var/www/html/wp-content/plugins/stateless
+
 # plugins from image
 mv -n /opt/plugins/* /var/www/html/wp-content/plugins
 
