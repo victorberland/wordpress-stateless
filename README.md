@@ -22,6 +22,10 @@ The `plugins` folder contains the `stateless` plugin which creates the API-route
 The `amazon-s3-and-cloudfront-tweaks.php` file is used to configure the WP Offload Media plugin for Scaleway Object Storage. If you're not using that plugin or Scaleway, you can remove it.
 Other files added to this folder will automatically be copied to the plugins folder in the built image.
 
+The `get-plugins.sh` script and `Dockerfile` will automatically download Akismet, Redis Object Cache, WP Super Cache and the language pack for Norwegian.
+
+It can therefore be a good idea to fork the project and customise it for your needs.
+
 ## In your project repository
 Create a `Dockerfile` file with the following contents:
 ```dockerfile
