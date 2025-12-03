@@ -6,18 +6,23 @@ Docker image for running WordPress on non-persistent stateless containers. Teste
 - WP Super Cache
 - Akismet
 
-## How It Works
+## How it works
 
-### What Does This Mean in Practice?
+### What does this mean in practice?
 - Theme changes are pushed to the image at build
 - Plugins can be downloaded and updated in wp-admin as one usually would
 - Media uploads are stored in object storage
 
-## You Will Also Need
+## You will also need
 - A MySQL database. Most cloud providers offer managed databases.
 - An Object Storage provider for media uploads and a plugin to handle uploads. Tested with https://deliciousbrains.com/wp-offload-media/, but there are other similar plugins available.
 
-## In Your Project Repository
+## Built-in plugins
+The `plugins` folder contains the `stateless` plugin which creates the API-route used for plugin syncing.
+The `amazon-s3-and-cloudfront-tweaks.php` file is used to configure the WP Offload Media plugin for Scaleway Object Storage. If you're not using that plugin or Scaleway, you can remove it.
+Other files added to this folder will automatically be copied to the plugins folder in the built image.
+
+## In your project repository
 Create a `Dockerfile` file with the following contents:
 ```dockerfile
 FROM ghcr.io/victorberland/wordpress-stateless:latest
@@ -26,7 +31,7 @@ COPY --chown=www-data:www-data wp-content /var/www/html/wp-content
 ```
 Replace `https://example.com` with the URL of your WordPress site.
 
-### GitHub Actions Workflow Example
+### GitHub Actions Workflow example
 If you are using GitHub Actions, you can use the following workflow to build and push the image to GitHub Container Registry by creating a `.github/workflows/build.yml` file with the following contents:
 ```yaml
 name: Build and push to registry
@@ -58,7 +63,7 @@ This will build the image and push it to GitHub Container Registry with the tag 
 
 Make sure to create a secret named `STATELESS_PLUGINS_KEY` with a random string value. This must match the value of the `STATELESS_PLUGINS_KEY` environment variable in your WordPress container.
 
-## Environment Variables
+## Environment variables
 - `WORDPRESS_DB_HOST` Database host and port
 - `WORDPRESS_DB_NAME`
 - `WORDPRESS_DB_USER`
