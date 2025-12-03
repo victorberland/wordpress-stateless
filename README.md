@@ -75,4 +75,5 @@ Make sure to create a secret named `STATELESS_PLUGINS_KEY` with a random string 
 - `WORDPRESS_DB_USER`
 - `WORDPRESS_DB_PASSWORD` Database password
 - `STATELESS_PLUGINS_KEY` Random string used for the plugin syncing step.
+
 You can also specify any other environment variables supported by the official WordPress image.
