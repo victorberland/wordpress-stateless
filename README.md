@@ -32,10 +32,10 @@ It can therefore be a good idea to fork the project and customise it for your ne
 Create a `Dockerfile` file with the following contents:
 ```dockerfile
 FROM ghcr.io/victorberland/wordpress-stateless:latest
-RUN get-plugins.sh https://example.com
+RUN --mount=type=secret,id=stateless_plugins_key --mount=type=secret,id=stateless_plugins_url  \
+    get-plugins.sh $(cat /run/secrets/stateless_plugins_url) $(cat /run/secrets/stateless_plugins_key)
 COPY --chown=www-data:www-data wp-content /var/www/html/wp-content
 ```
-Replace `https://example.com` with the URL of your WordPress site.
 
 ### GitHub Actions Workflow example
 If you are using GitHub Actions, you can use the following workflow to build and push the image to GitHub Container Registry by creating a `.github/workflows/build.yml` file with the following contents:
@@ -63,11 +63,15 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
+          secrets: |
+            stateless_plugins_key=${{ secrets.STATELESS_PLUGINS_KEY }}
+            stateless_plugins_url=${{ secrets.STATELESS_PLUGINS_URL }}
           tags: ghcr.io/${{ github.repository }}:${{ github.run_number }}, ghcr.io/${{ github.repository }}:latest
 ```
 This will build the image and push it to GitHub Container Registry with the tag `latest` as well as the run number for versioning.
 
 Make sure to create a secret named `STATELESS_PLUGINS_KEY` with a random string value. This must match the value of the `STATELESS_PLUGINS_KEY` environment variable in your WordPress container.
+Also create one named `STATELESS_PLUGINS_URL` with the URL of your site, for example `https://example.com`.
 
 ## Environment variables
 - `WORDPRESS_DB_HOST` Database host and port
