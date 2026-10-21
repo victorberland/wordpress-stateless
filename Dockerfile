@@ -1,6 +1,6 @@
 # Based on https://github.com/docker-library/wordpress/blob/master/latest/php8.4/apache/Dockerfile
 
-FROM php:8.4-apache
+FROM php:8.5.12-apache
 
 # persistent dependencies
 RUN set -eux; \
